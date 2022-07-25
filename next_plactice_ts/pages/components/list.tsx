@@ -1,9 +1,22 @@
 import React, { useState } from 'react'
 import useSWR from 'swr'
+import axios from 'axios'
 const fetcher = (...args: any[]) => fetch(...args).then(res => res.json())
-
+axios.defaults.headers.post['Access-Control-Allow-Origin'] = '*';
 export default function List(props: any) {
-  const { data } = useSWR('/test_data/data.json', fetcher)
+  // const { data } = useSWR('http://localhost:8080/', fetcher)
+  const url = axios.get("http://localhost:8080/")
+
+  // thenで成功した場合の処理
+  .then((aa) => {
+      console.log("ステータスコード:", aa);
+
+  })
+  // catchでエラー時の挙動を定義
+  .catch(err => {
+      console.log("err:", err);
+  });
+  // console.log("----------------------" + JSON.stringify(data))
   return (
     <div>
       <form>
@@ -17,12 +30,12 @@ export default function List(props: any) {
       <h3>一覧</h3>
         <table className="table table-dark">
           <tbody>
-            {data != undefined ? data.data.map((value, key)=> (
+            {/* {data != undefined ? data.data.map((value, key)=> (
               <tr key={key}>
                 <th>{value.title}</th>
                 <td>{value.content}</td>
               </tr>
-            )) : <tr><th></th><td>no data.</td><td></td></tr>}
+            )) : <tr><th></th><td>no data.</td><td></td></tr>} */}
           </tbody>
         </table>
 

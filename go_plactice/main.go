@@ -16,6 +16,9 @@ func main() {
     http.ListenAndServe(":8080", nil)
 }
 func handler(w http.ResponseWriter, r *http.Request){
+    w.Header().Set("Access-Control-Allow-Headers", "*")
+    w.Header().Set("Access-Control-Allow-Origin", "*")
+    w.Header().Set( "Access-Control-Allow-Methods","GET, POST, PUT, DELETE, OPTIONS" )
     fmt.Println("handler!");
     var data1 = Data1{}
     data1.Title = "sample1"
