@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import useSWR from 'swr'
+// import useSWR from 'swr'
 import axios from 'axios'
 // const fetcher = (...args: any[]) => fetch(...args).then(res => res.json())
 
@@ -7,8 +7,9 @@ export default function List(props: any) {
   const url = axios.get("http://localhost:8080/")
 
   // thenで成功した場合の処理
-  .then((aa) => {
-      console.log("ステータスコード:", aa);
+  .then((ret) => {
+      // console.log("全ての結果:", JSON.stringify(ret));
+      console.log("結果:", JSON.stringify(ret.data));
 
   })
   // catchでエラー時の挙動を定義
