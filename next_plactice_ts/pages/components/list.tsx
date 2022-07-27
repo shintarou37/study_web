@@ -1,10 +1,9 @@
 import React, { useState } from 'react'
 import useSWR from 'swr'
 import axios from 'axios'
-const fetcher = (...args: any[]) => fetch(...args).then(res => res.json())
-axios.defaults.headers.post['Access-Control-Allow-Origin'] = '*';
+// const fetcher = (...args: any[]) => fetch(...args).then(res => res.json())
+
 export default function List(props: any) {
-  // const { data } = useSWR('http://localhost:8080/', fetcher)
   const url = axios.get("http://localhost:8080/")
 
   // thenで成功した場合の処理
@@ -16,7 +15,6 @@ export default function List(props: any) {
   .catch(err => {
       console.log("err:", err);
   });
-  // console.log("----------------------" + JSON.stringify(data))
   return (
     <div>
       <form>
