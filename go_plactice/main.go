@@ -7,7 +7,7 @@ import (
 )
 type Data1 struct {
 	Title    string `json:"title"`
-	Message  string `json:"content"`
+	Content  string `json:"content"`
 }
 
 func main() {
@@ -18,15 +18,18 @@ func main() {
 func handler(w http.ResponseWriter, r *http.Request){
     w.Header().Set("Access-Control-Allow-Origin", "*")
     var data1 = Data1{}
+    var data2 = Data1{"2title","2content"}
     data1.Title = "sample1"
-    data1.Message = "hello, sample1"
+    data1.Content = "hello, sample1"
 
     // jsonエンコード
     outputJson, err := json.Marshal(&data1)
-    if err != nil {
+    outputJson2, err2 := json.Marshal(&data2)
+    if err != nil || err2 != nil {
         panic(err)
     }
-
+    fmt.Println(string(outputJson));
+    fmt.Println(string(outputJson2));
     // jsonヘッダーを出力
     w.Header().Set("Content-Type", "application/json")
 
