@@ -34,5 +34,5 @@ func handler(w http.ResponseWriter, r *http.Request){
     w.Header().Set("Content-Type", "application/json")
 
     // jsonデータを出力
-    fmt.Fprint(w, string(outputJson), string(outputJson2))
+    fmt.Fprint(w, string(outputJson))
 }
