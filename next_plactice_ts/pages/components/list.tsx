@@ -1,21 +1,27 @@
 import React, { useState } from 'react'
 // import useSWR from 'swr'
 import axios from 'axios'
+import { type } from 'os';
 // const fetcher = (...args: any[]) => fetch(...args).then(res => res.json())
-
+const [results, b] = useState({"title": "", "content": ""})
+const clickFunc = (ret: any) => {
+  b(ret)
+}
 export default function List(props: any) {
-  const url = axios.get("http://localhost:8080/")
+  // let results : any = {"title": "", "content": ""};
 
+  const url = axios.get("http://localhost:8080/")
   // thenで成功した場合の処理
   .then((ret) => {
-      // console.log("全ての結果:", JSON.stringify(ret));
-      console.log("結果:", JSON.stringify(ret.data));
-
+    // console.log(ret.data)
+      // results = ret.data;
+      clickFunc(ret.data)
   })
   // catchでエラー時の挙動を定義
   .catch(err => {
       console.log("err:", err);
   });
+  console.log(results)
   return (
     <div>
       <form>
@@ -27,17 +33,9 @@ export default function List(props: any) {
           <input type="submit" value="送信"></input>
       </form><br></br><br></br>
       <h3>一覧</h3>
-        <table className="table table-dark">
-          <tbody>
-            {/* {data != undefined ? data.data.map((value, key)=> (
-              <tr key={key}>
-                <th>{value.title}</th>
-                <td>{value.content}</td>
-              </tr>
-            )) : <tr><th></th><td>no data.</td><td></td></tr>} */}
-          </tbody>
-        </table>
-
+      <ul>
+        {/* <li>{results.title}</li> */}
+      </ul>
     </div>
   )
 }
