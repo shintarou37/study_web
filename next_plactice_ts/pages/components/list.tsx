@@ -3,25 +3,28 @@ import React, { useState } from 'react'
 import axios from 'axios'
 import { type } from 'os';
 // const fetcher = (...args: any[]) => fetch(...args).then(res => res.json())
-const [results, b] = useState({"title": "", "content": ""})
-const clickFunc = (ret: any) => {
-  b(ret)
-}
+
 export default function List(props: any) {
-  // let results : any = {"title": "", "content": ""};
+  // 関数の外で定義するとエラーになる
+// const [results, b] = useState({"title": "", "content": ""})
+console.log("results")
+// const clickFunc = (ret: any) => {
+
+//   b(ret)
+// }
+//   // let results : any = {"title": "", "content": ""};
 
   const url = axios.get("http://localhost:8080/")
-  // thenで成功した場合の処理
-  .then((ret) => {
-    // console.log(ret.data)
-      // results = ret.data;
-      clickFunc(ret.data)
-  })
-  // catchでエラー時の挙動を定義
-  .catch(err => {
-      console.log("err:", err);
-  });
-  console.log(results)
+//   // thenで成功した場合の処理
+//   .then((ret) => {
+//     // console.log(ret.data)
+//       // results = ret.data;
+//       // clickFunc(ret.data)
+//   })
+//   // catchでエラー時の挙動を定義
+//   .catch(err => {
+//       console.log("err:", err);
+//   });
   return (
     <div>
       <form>
