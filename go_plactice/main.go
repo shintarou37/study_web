@@ -20,13 +20,16 @@ func main() {
 func handler(w http.ResponseWriter, r *http.Request){
     fmt.Println("GOが呼び出された")
     w.Header().Set("Access-Control-Allow-Origin", "*")
+    var datas = []Data1{}
     var data1 = Data1{}
-    // var data2 = Data1{"2title","2content"}
+
     data1.Title = "sample1"
     data1.Content = "hello, sample1"
-
+    datas = append(datas, data1)
+    fmt.Println(datas)
     // jsonエンコード
-    outputJson, err := json.Marshal(&data1)
+    // outputJson, err := json.Marshal(&data1)
+    dataput, err := json.Marshal(datas)
     // outputJson2, err2 := json.Marshal(&data2)
     if err != nil /*|| err2 != nil*/ {
         panic(err)
@@ -37,5 +40,6 @@ func handler(w http.ResponseWriter, r *http.Request){
     w.Header().Set("Content-Type", "application/json")
 
     // jsonデータを出力
-    fmt.Fprint(w, string(outputJson))
+    fmt.Fprint(w, string(dataput))
+    // fmt.Fprint(w, string(outputJson))
 }
