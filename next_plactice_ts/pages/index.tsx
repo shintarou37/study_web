@@ -27,8 +27,8 @@ const Home: NextPage = () => {
       <main className={styles.main}>
       {data ? 
       <div>
-      <p>{data.title}</p>
-      <p>{data.content}</p>
+      <p>{data[0].title}</p>
+      <p>{data[0].content}</p>
       </div>
 
   :
