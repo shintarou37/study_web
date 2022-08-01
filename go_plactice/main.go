@@ -31,18 +31,13 @@ func handler(w http.ResponseWriter, r *http.Request){
     datas = append(datas, data2)
     // fmt.Println(datas)
     // jsonエンコード
-    // outputJson, err := json.Marshal(&data1)
-    dataput, err := json.Marshal(datas)
-    // outputJson2, err2 := json.Marshal(&data2)
-    if err != nil /*|| err2 != nil*/ {
+    outputJson, err := json.Marshal(datas)
+    if err != nil {
         panic(err)
     }
-    // fmt.Println(string(outputJson));
-    // fmt.Println(string(outputJson2));
     // jsonヘッダーを出力
     w.Header().Set("Content-Type", "application/json")
-    fmt.Println(datas)
+    fmt.Println(outputJson)
     // jsonデータを出力
-    fmt.Fprint(w, string(dataput))
-    // fmt.Fprint(w, string(outputJson))
+    fmt.Fprint(w, string(outputJson))
 }
