@@ -5,10 +5,12 @@ import (
     "gorm.io/gorm"
     "gorm.io/driver/mysql"
 )
+// 構造体名を大文字にしないと以下のエラーになる
+// 「struct field title has json tag but is not exportedstructtag」
 type Data1 struct {
     gorm.Model
-	title    string `json:"title"`
-	content  string `json:"content"`
+	Title    string `json:"title"`
+	Content  string `json:"content"`
 }
 
 func main() {
