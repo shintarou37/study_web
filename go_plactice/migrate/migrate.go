@@ -2,44 +2,42 @@ package main
 
 import (
 	"fmt"
-    "gorm.io/gorm"
-    "gorm.io/driver/mysql"
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
+    "reflect"
 )
-// 構造体名を大文字にしないと以下のエラーになる
-// 「struct field title has json tag but is not exportedstructtag」
+
+// 構造体名が小文字だと、初期化時にフィールドは存在しているがDB作成時にカラムが生成されていないので大文字にする必要がある。
 type Data1 struct {
     gorm.Model
-	Title    string `json:"title"`
-	Content  string `json:"content"`
+	Title    string
+	Content  string
 }
 
 func main() {
     fmt.Println("Start migrate!");
-    up01()
-    down01();
+    dsn := "user:pass@tcp(127.0.0.1:3306)/dbname?charset=utf8mb4&parseTime=True&loc=Local"
+    db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+    fmt.Println(reflect.TypeOf(db))
+    if err != nil {
+		panic("failed to connect database")
+	} else {
+        up01(dsn, db)
+        // down01(dsn, db);
+	}
+
     fmt.Println("End migrate!");
 }
 
-func up01() {
-    fmt.Println("Start 001_up!");
-    // dsn := "user:pass@tcp(127.0.0.1:3306)/dbname?charset=utf8mb4&parseTime=True&loc=Local"
+func up01(dsn string, db *gorm.DB) {
+    fmt.Println("Start up01!");
+    db.AutoMigrate(Data1{})
+    fmt.Println("End up01!");
 
-    db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
-    if err != nil {
-		panic("failed to connect database")
-	}
-    // テーブル作成
-    db.AutoMigrate(&Data1{})
-    fmt.Println("End 001_up!");
 }
-func down01() {
-    fmt.Println("Start 001_down!");
-    // dsn := "user:pass@tcp(127.0.0.1:3306)/dbname?charset=utf8mb4&parseTime=True&loc=Local"
-    db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
-    if err != nil {
-		panic("failed to connect database")
-	}
+func down01(dsn string, db *gorm.DB) {
+    fmt.Println("Start down01!");
     // テーブル削除
     db.Migrator().DropTable(&Data1{})
-    fmt.Println("End 001_down!");
+    fmt.Println("End down01!");
 }
