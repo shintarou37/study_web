@@ -16,7 +16,7 @@ type Data1 struct {
 
 func main() {
     fmt.Println("Start migrate!");
-    dsn := "user:pass@tcp(127.0.0.1:3306)/dbname?charset=utf8mb4&parseTime=True&loc=Local"
+    dsn := "root:@tcp(127.0.0.1:3306)/go_plactice?charset=utf8mb4&parseTime=True&loc=Local"
     db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
     fmt.Println(reflect.TypeOf(db))
     if err != nil {
