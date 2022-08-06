@@ -3,9 +3,10 @@ package main
 import (
 	"fmt"
 	"net/http"
-    "encoding/json"
+    // "encoding/json"
     "gorm.io/gorm"
     "gorm.io/driver/mysql"
+    "reflect"
 )
 // 構造体名を大文字にしないと以下のエラーになる
 // 「struct field title has json tag but is not exportedstructtag」
@@ -23,34 +24,39 @@ func main() {
 }
 
 func handler(w http.ResponseWriter, r *http.Request){
-    fmt.Println("GOが呼び出された")
+    fmt.Println("パス（\"/\"）でGOが呼び出された")
     dsn := "root:@tcp(127.0.0.1:3306)/go_plactice?charset=utf8mb4&parseTime=True&loc=Local"
     db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
     if err != nil {
 		panic("failed to connect database")
 	}
-    Read(db)
-    w.Header().Set("Access-Control-Allow-Origin", "*")
-    var datas = []Data1{}
-    var data1 = Data1{}
-    var data2 = Data1{Title: "smaple2", Content: "hello, sample2"}
-    // fmt.Println(datas)
+    ret := ReadMulti(db)
+    fmt.Println("戻り値を出力する")
+    fmt.Println(ret)
 
-    data1.Title = "sample1"
-    data1.Content = "hello, sample1"
-    datas = append(datas, data1)
-    datas = append(datas, data2)
-    // fmt.Println(datas)
-    // jsonエンコード
-    outputJson, err := json.Marshal(datas)
-    if err != nil {
-        panic(err)
-    }
-    // jsonヘッダーを出力
-    w.Header().Set("Content-Type", "application/json")
-    fmt.Println(outputJson)
-    // jsonデータを出力
-    fmt.Fprint(w, string(outputJson))
+    // var datas = []Data1{}
+    // var data1 = Data1{}
+    // var data2 = Data1{Title: "smaple2", Content: "hello, sample2"}
+    // // fmt.Println(datas)
+
+    // data1.Title = "sample1"
+    // data1.Content = "hello, sample1"
+    // datas = append(datas, data1)
+    // datas = append(datas, data2)
+    // // fmt.Println(datas)
+    // // jsonエンコード
+    // outputJson, err := json.Marshal(datas)
+    // if err != nil {
+    //     panic(err)
+    // }
+
+    // // ヘッダーをセットする
+    // w.Header().Set("Access-Control-Allow-Origin", "*")
+    // w.Header().Set("Content-Type", "application/json")
+    // // jsonを出力
+    // fmt.Println(outputJson)
+    // // jsonデータを出力
+    // fmt.Fprint(w, string(outputJson))
 }
 
 func Creat(db *gorm.DB){
@@ -64,16 +70,23 @@ func Creat(db *gorm.DB){
 		return
 	}
 }
+/* 
+    戻り値を指定していないと
+    「too many return values have ([]Data1) want ()compilerWrongResultCount」
+    というエラーになる。
+*/
+func ReadMulti(db *gorm.DB)[]Data1{
+    var data1_arr []Data1
+    db.Debug().Find(&data1_arr)
+    fmt.Println(data1_arr)
+    fmt.Println(reflect.TypeOf(data1_arr))
+    return data1_arr
+}
 
 func Read(db *gorm.DB){
     var data1 Data1
     db.Debug().First(data1, 2)
     fmt.Println(data1)
-
-    //  multi
-    var data1_arr []Data1
-    db.Debug().Find(&data1_arr)
-    fmt.Println(data1_arr)
 }
 
 func Update(db *gorm.DB){
