@@ -22,8 +22,8 @@ func main() {
     if err != nil {
 		panic("failed to connect database")
 	} else {
+        down01(dsn, db);
         up01(dsn, db)
-        // down01(dsn, db);
 	}
 
     fmt.Println("End migrate!");
