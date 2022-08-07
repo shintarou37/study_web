@@ -14,10 +14,14 @@ const Home: NextPage = () => {
   let datas;
   {if(data){
     datas = data.map((value: any,key: any)=>(
-      <li key={key} value={key}>
-        {value.title}
-        {value.content}
-      </li>      
+      <ul>
+        <h1>{value.ID}番</h1>
+        <p>タイトル</p>
+        <li>{value.title}</li>
+        <p>内容</p>
+        <li>{value.content}</li>   
+      </ul>
+
     ))
   }}
 
@@ -33,7 +37,7 @@ const Home: NextPage = () => {
             {datas}
           </div>
         :
-          <p>データがありません</p>
+          <p></p>
         }
       </main>
     </div>
