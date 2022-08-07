@@ -3,10 +3,10 @@ package main
 import (
 	"fmt"
 	"net/http"
-    // "encoding/json"
+    "encoding/json"
     "gorm.io/gorm"
     "gorm.io/driver/mysql"
-    "reflect"
+    // "reflect"
 )
 // 構造体名を大文字にしないと以下のエラーになる
 // 「struct field title has json tag but is not exportedstructtag」
@@ -36,33 +36,32 @@ func main() {
 func top(w http.ResponseWriter, r *http.Request){
     fmt.Println("パス（\"/\"）でGOが呼び出された")
     ret := ReadMulti()
-    fmt.Println("戻り値を出力する")
-    fmt.Println(ret)
 
     // var datas = []Data1{}
     // var data1 = Data1{}
     // var data2 = Data1{Title: "smaple2", Content: "hello, sample2"}
     // // fmt.Println(datas)
-
     // data1.Title = "sample1"
     // data1.Content = "hello, sample1"
     // datas = append(datas, data1)
     // datas = append(datas, data2)
     // // fmt.Println(datas)
-    // // jsonエンコード
-    // outputJson, err := json.Marshal(datas)
-    // if err != nil {
-    //     panic(err)
-    // }
 
-    // // ヘッダーをセットする
-    // w.Header().Set("Access-Control-Allow-Origin", "*")
-    // w.Header().Set("Content-Type", "application/json")
-    // // jsonを出力
-    // fmt.Println(outputJson)
-    // // jsonデータを出力
-    // fmt.Fprint(w, string(outputJson))
+    // jsonエンコード
+    outputJson, err := json.Marshal(ret)
+    if err != nil {
+        panic(err)
+    }
+
+    // ヘッダーをセットする
+    w.Header().Set("Access-Control-Allow-Origin", "*")
+    w.Header().Set("Content-Type", "application/json")
+    // sonをコンソールに出力する
+    fmt.Println(outputJson)
+    // jsonデータを返却する
+    fmt.Fprint(w, string(outputJson))
 }
+
 
 func Creat(){
     db.Debug().Create(&Data1{Title: "title1", Content: "content1"})
@@ -83,8 +82,6 @@ func Creat(){
 func ReadMulti()[]Data1{
     var data1_arr []Data1
     db.Debug().Find(&data1_arr)
-    fmt.Println(data1_arr)
-    fmt.Println(reflect.TypeOf(data1_arr))
     return data1_arr
 }
 
