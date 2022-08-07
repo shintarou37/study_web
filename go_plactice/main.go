@@ -16,21 +16,26 @@ type Data1 struct {
 	Content  string `json:"content"`
 }
 
+// グローバルスコープとして定義することで、本ファイルのどの関数でも引数の受け渡しなしに使用可能にする。
+var db *gorm.DB
+var db_err error
+
 func main() {
     fmt.Println("Start!");
-    http.HandleFunc("/", handler);
+    dsn := "root:@tcp(127.0.0.1:3306)/go_plactice?charset=utf8mb4&parseTime=True&loc=Local"
+    db, db_err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
+    if db_err != nil {
+		panic("failed to connect database")
+	}
+
+    http.HandleFunc("/", top);
     http.ListenAndServe(":8080", nil)
     fmt.Println("End!");
 }
 
-func handler(w http.ResponseWriter, r *http.Request){
+func top(w http.ResponseWriter, r *http.Request){
     fmt.Println("パス（\"/\"）でGOが呼び出された")
-    dsn := "root:@tcp(127.0.0.1:3306)/go_plactice?charset=utf8mb4&parseTime=True&loc=Local"
-    db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
-    if err != nil {
-		panic("failed to connect database")
-	}
-    ret := ReadMulti(db)
+    ret := ReadMulti()
     fmt.Println("戻り値を出力する")
     fmt.Println(ret)
 
@@ -59,7 +64,7 @@ func handler(w http.ResponseWriter, r *http.Request){
     // fmt.Fprint(w, string(outputJson))
 }
 
-func Creat(db *gorm.DB){
+func Creat(){
     db.Debug().Create(&Data1{Title: "title1", Content: "content1"})
     // multi
     var multi_create = []Data1{{Title: "title2", Content: "content2"}, {Title: "title3", Content: "content3"}, {Title: "title4", Content: "content3"}}
@@ -75,7 +80,7 @@ func Creat(db *gorm.DB){
     「too many return values have ([]Data1) want ()compilerWrongResultCount」
     というエラーになる。
 */
-func ReadMulti(db *gorm.DB)[]Data1{
+func ReadMulti()[]Data1{
     var data1_arr []Data1
     db.Debug().Find(&data1_arr)
     fmt.Println(data1_arr)
