@@ -56,8 +56,9 @@ func top(w http.ResponseWriter, r *http.Request){
     // ヘッダーをセットする
     w.Header().Set("Access-Control-Allow-Origin", "*")
     w.Header().Set("Content-Type", "application/json")
-    // sonをコンソールに出力する
-    fmt.Println(outputJson)
+    
+    // jsonをコンソールに出力する
+    fmt.Println(string(outputJson))
     // jsonデータを返却する
     fmt.Fprint(w, string(outputJson))
 }
