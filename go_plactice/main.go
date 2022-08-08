@@ -29,6 +29,7 @@ func main() {
 	}
 
     http.HandleFunc("/", top);
+    http.HandleFunc("/register", register);
     http.ListenAndServe(":8080", nil)
     fmt.Println("End!");
 }
@@ -58,11 +59,24 @@ func top(w http.ResponseWriter, r *http.Request){
     w.Header().Set("Content-Type", "application/json")
     
     // jsonをコンソールに出力する
-    fmt.Println(string(outputJson))
+    // fmt.Println(string(outputJson))
     // jsonデータを返却する
     fmt.Fprint(w, string(outputJson))
 }
 
+func register(w http.ResponseWriter, r *http.Request){
+    fmt.Println("パス（\"/register\"）でGOが呼び出された")
+    var data2 = Data1{Title: "smaple2", Content: "hello, sample2"}
+    outputJson, err := json.Marshal(data2)
+    if err != nil {
+        panic(err)
+    }
+
+    // ヘッダーをセットする
+    w.Header().Set("Access-Control-Allow-Origin", "*")
+    w.Header().Set("Access-Control-Allow-Headers", "*")
+    fmt.Fprint(w, string(outputJson))
+}
 
 func Creat(){
     db.Debug().Create(&Data1{Title: "title1", Content: "content1"})
