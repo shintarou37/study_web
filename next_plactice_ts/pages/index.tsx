@@ -5,12 +5,31 @@ import List from './components/list'
 import styles from '../styles/Home.module.css'
 import useSWR from 'swr'
 import {useState} from 'react'
+import { title } from 'process'
+import axios from 'axios'
 
 const fetcher = (...args: any) => fetch(...args).then(res => res.json())
 
 const Home: NextPage = () => {
   const [ address, setAddress ] = useState('http://localhost:8080/')
   const { data, error } = useSWR(address, fetcher)
+  const [title, setTitle] = useState('');
+  const [content, setContent] = useState('');
+  const send = async () => {
+    axios.request({ //axios({ のように.request省略可
+      method: 'post',
+      url: 'http://localhost:8080/register',
+      data: {
+        firstName: 'Fred',
+        lastName: 'Flintstone'
+      }
+    })
+    .then((ret)=>{
+      console.log("----------------------ret")
+      console.log(JSON.stringify(ret))
+    })
+  };
+
   let datas;
   {if(data){
     datas = data.map((value: any,key: any)=>(
@@ -33,14 +52,11 @@ const Home: NextPage = () => {
       </Head>
       <main className={styles.main}>
       <h1>投稿フォーム</h1>
-        <form action="/register" method="post">
-          <label>タイトル:</label><br></br>
-          <input type="text" name="title" /><br></br>
-          <label>内容</label><br></br>
-          <input type="text" name="content" /><br></br>
-          <button type="submit">送信</button><br></br>
-        </form>
-
+        <label>タイトル:</label><br></br>
+        <input type="text" name="title" onChange={(e) => setTitle(e.target.value)}/><br></br>
+        <label>内容</label><br></br>
+        <input type="text" name="content" onChange={(e) => setContent(e.target.value)}/><br></br>
+        <button type="submit" onClick={send}>送信</button><br></br>
         {data ? 
           <div>
             {datas}
