@@ -16,7 +16,7 @@ const Home: NextPage = () => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const send = async () => {
-    axios.post('http://localhost:8080/register?title=test_title&content=test_content')
+    axios.post(`http://localhost:8080/register?title=${title}&content=${content}`)
     .then(function (response) {
       console.log(response.data);
     })
