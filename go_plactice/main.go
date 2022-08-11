@@ -66,6 +66,8 @@ func top(w http.ResponseWriter, r *http.Request){
 
 func register(w http.ResponseWriter, r *http.Request){
     fmt.Println("パス（\"/register\"）でGOが呼び出された")
+    fmt.Println(r.URL.Query().Get("title"))
+    fmt.Println(r.URL.Query().Get("content"))
     var data2 = Data1{Title: "smaple2", Content: "hello, sample2"}
     outputJson, err := json.Marshal(data2)
     if err != nil {
