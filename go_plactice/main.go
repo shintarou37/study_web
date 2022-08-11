@@ -66,22 +66,27 @@ func top(w http.ResponseWriter, r *http.Request){
 
 func register(w http.ResponseWriter, r *http.Request){
     fmt.Println("パス（\"/register\"）でGOが呼び出された")
-    fmt.Println(r.URL.Query().Get("title"))
-    fmt.Println(r.URL.Query().Get("content"))
-    var data2 = Data1{Title: "smaple2", Content: "hello, sample2"}
-    outputJson, err := json.Marshal(data2)
-    if err != nil {
-        panic(err)
-    }
+    var title string = r.URL.Query().Get("title")
+    var content string = r.URL.Query().Get("content")
+    ret := Creat(title, content)
+    fmt.Println(ret)
 
     // ヘッダーをセットする
     w.Header().Set("Access-Control-Allow-Origin", "*")
     w.Header().Set("Access-Control-Allow-Headers", "*")
-    fmt.Fprint(w, string(outputJson))
+    fmt.Fprint(w, ret)
 }
 
-func Creat(){
-    db.Debug().Create(&Data1{Title: "title1", Content: "content1"})
+func Creat(title, content string) bool {
+    if err := db.Debug().Create(&Data1{Title: title, Content: content}).Error; err != nil {
+        fmt.Println("error happen!")
+		fmt.Println(err)
+		return false
+	}
+
+    return true
+}
+func CreatMulti(title, content string){
     // multi
     var multi_create = []Data1{{Title: "title2", Content: "content2"}, {Title: "title3", Content: "content3"}, {Title: "title4", Content: "content3"}}
     db.Debug().Create(&multi_create)
