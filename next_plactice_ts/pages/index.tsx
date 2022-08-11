@@ -16,13 +16,9 @@ const Home: NextPage = () => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const send = async () => {
-    axios.request({ //axios({ のように.request省略可
-      method: 'post',
-      url: 'http://localhost:8080/register',
-      data: {
-        firstName: 'Fred',
-        lastName: 'Flintstone'
-      }
+    axios.post('http://localhost:8080/register?title=test_title&content=test_content')
+    .then(function (response) {
+      console.log(response.data);
     })
     .then((ret)=>{
       console.log("----------------------ret")
