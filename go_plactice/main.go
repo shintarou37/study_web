@@ -27,35 +27,105 @@ func main() {
     if db_err != nil {
 		panic("failed to connect database")
 	}
-    // テーブル作成
-    db.AutoMigrate(&Data1{})
-    // テーブル削除
-    db.Migrator().DropTable(&Data1{})
-    http.HandleFunc("/", handler);
+
+    http.HandleFunc("/", top);
+    http.HandleFunc("/register", register);
     http.ListenAndServe(":8080", nil)
     fmt.Println("End!");
 }
-func handler(w http.ResponseWriter, r *http.Request){
-    fmt.Println("GOが呼び出された")
-    w.Header().Set("Access-Control-Allow-Origin", "*")
-    var datas = []Data1{}
-    var data1 = Data1{}
-    var data2 = Data1{Title: "smaple2", Content: "hello, sample2"}
-    // fmt.Println(datas)
 
-    data1.Title = "sample1"
-    data1.Content = "hello, sample1"
-    datas = append(datas, data1)
-    datas = append(datas, data2)
-    // fmt.Println(datas)
+func top(w http.ResponseWriter, r *http.Request){
+    fmt.Println("パス（\"/\"）でGOが呼び出された")
+    ret := ReadMulti()
+
+    // var datas = []Data1{}
+    // var data1 = Data1{}
+    // var data2 = Data1{Title: "smaple2", Content: "hello, sample2"}
+    // // fmt.Println(datas)
+    // data1.Title = "sample1"
+    // data1.Content = "hello, sample1"
+    // datas = append(datas, data1)
+    // datas = append(datas, data2)
+    // // fmt.Println(datas)
+
     // jsonエンコード
-    outputJson, err := json.Marshal(datas)
+    outputJson, err := json.Marshal(ret)
     if err != nil {
         panic(err)
     }
-    // jsonヘッダーを出力
+
+    // ヘッダーをセットする
+    w.Header().Set("Access-Control-Allow-Origin", "*")
     w.Header().Set("Content-Type", "application/json")
-    fmt.Println(outputJson)
-    // jsonデータを出力
+    
+    // jsonをコンソールに出力する
+    // fmt.Println(string(outputJson))
+    // jsonデータを返却する
     fmt.Fprint(w, string(outputJson))
+}
+
+func register(w http.ResponseWriter, r *http.Request){
+    fmt.Println("パス（\"/register\"）でGOが呼び出された")
+    var title string = r.URL.Query().Get("title")
+    var content string = r.URL.Query().Get("content")
+    ret := Creat(title, content)
+    fmt.Println(ret)
+
+    // ヘッダーをセットする
+    w.Header().Set("Access-Control-Allow-Origin", "*")
+    w.Header().Set("Access-Control-Allow-Headers", "*")
+    fmt.Fprint(w, ret)
+}
+
+func Creat(title, content string) bool {
+    if err := db.Debug().Create(&Data1{Title: title, Content: content}).Error; err != nil {
+        fmt.Println("error happen!")
+		fmt.Println(err)
+		return false
+	}
+
+    return true
+}
+func CreatMulti(title, content string){
+    // multi
+    var multi_create = []Data1{{Title: "title2", Content: "content2"}, {Title: "title3", Content: "content3"}, {Title: "title4", Content: "content3"}}
+    db.Debug().Create(&multi_create)
+    if err := db.Create(&Data1{Title: "title1", Content: "content1"}).Error; err != nil {
+        fmt.Println("error happen!")
+		fmt.Println(err)
+		return
+	}
+}
+/* 
+    戻り値を指定していないと
+    「too many return values have ([]Data1) want ()compilerWrongResultCount」
+    というエラーになる。
+*/
+func ReadMulti()[]Data1{
+    var data1_arr []Data1
+    db.Debug().Find(&data1_arr)
+    return data1_arr
+}
+
+func Read(db *gorm.DB){
+    var data1 Data1
+    db.Debug().First(data1, 2)
+    fmt.Println(data1)
+}
+
+func Update(db *gorm.DB){
+    var data1 Data1
+    if err := db.Debug().Model(&Data1{}).Where("id = ?", 1).Update("Title", "titleUpdate").Error; err != nil {
+		fmt.Println(err)
+		fmt.Println(data1)
+		return
+	}
+
+    // multi
+    db.Debug().Model(&data1).Where("id = ?", 2).Updates(Data1{Title: "titleMultUpdate", Content: "ContentMultUpdate"})
+}
+
+func Delete(db *gorm.DB){
+    var data1 Data1
+    db.Debug().Delete(&data1, 1)
 }
