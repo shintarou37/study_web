@@ -8,7 +8,7 @@ import { title } from 'process'
 import axios from 'axios'
 import Link from 'next/link'
 
-const fetcher = (...args: any) => fetch(...args).then(res => res.json())
+const fetcher = (url: string) => fetch(url).then(res => res.json())
 
 const Home: NextPage = () => {
   const [ address, setAddress ] = useState('http://localhost:8080/')
