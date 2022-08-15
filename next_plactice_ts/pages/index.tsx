@@ -4,41 +4,75 @@ import Image from 'next/image'
 import List from './components/list'
 import styles from '../styles/Home.module.css'
 import useSWR from 'swr'
-import {useState} from 'react'
+import { useState, useEffect } from 'react'
 import { title } from 'process'
 import axios from 'axios'
 
 const fetcher = (...args: any) => fetch(...args).then(res => res.json())
 
 const Home: NextPage = () => {
+  console.log("---------------------------------------topレベル")
   const [ address, setAddress ] = useState('http://localhost:8080/')
-  const { data, error } = useSWR(address, fetcher)
+  let { data, error } = useSWR(address, fetcher)
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
+  const [te, setTe] = useState('faa');
+  function faFA(){
+    axios.get('http://localhost:8080')
+  .then(function (response) {
+    // console.log("fa start")
+    // console.log(response.data);
+    // data = response.data
+    // data[0].title = "変更するfa"
+    // console.log("fa end")
+  })
+  }
+  // useEffect(() => {
+  //   {console.log("呼ばれました")}
+  // }, [data])
+  let aa: any = []
+
   const send = async () => {
+    setTitle("")
+    setContent("")
     axios.post(`http://localhost:8080/register?title=${title}&content=${content}`)
-    .then(function (response) {
-      console.log(response.data);
-    })
     .then((ret)=>{
+      setTe("fafafafa")
       console.log("----------------------ret")
-      console.log(JSON.stringify(ret))
+      // console.log(JSON.stringify(ret.data))
+      // console.log(data)
+      // data[0]["ID"]
+      data[0].title = "変更する"
+      // data.splice(0)
+      // // console.log(JSON.stringify(data))
+      data = ret.data
+      console.log(JSON.stringify(data))
+      // aa.push(ret.data)
+      // data.push({"title": "test", "content": "test"})
+      // data = useSWR(address, fetcher)
+      // console.log(JSON.stringify(data))
+      // faFA()
     })
   };
+  // if(data){
+  //   console.log(JSON.stringify(data[0].title))
+  // }
 
   let datas;
-  {if(data){
+  if(data){
+    {console.log("map")}
+    {console.log("--------------------------" + JSON.stringify(data))}
     datas = data.map((value: any,key: any)=>(
       <ul>
-        <h1>{value.ID}番</h1>
-        <p>タイトル</p>
+        <h3>{value.ID}番</h3>
+        タイトル
         <li>{value.title}</li>
-        <p>内容</p>
+        内容
         <li>{value.content}</li>   
       </ul>
 
     ))
-  }}
+  }
 
   return (
     <div className={styles.container}>
@@ -49,9 +83,9 @@ const Home: NextPage = () => {
       <main className={styles.main}>
       <h1>投稿フォーム</h1>
         <label>タイトル:</label><br></br>
-        <input type="text" name="title" onChange={(e) => setTitle(e.target.value)}/><br></br>
+        <input type="text" name="title" value={title} onChange={(e) => setTitle(e.target.value)}/><br></br>
         <label>内容</label><br></br>
-        <input type="text" name="content" onChange={(e) => setContent(e.target.value)}/><br></br>
+        <input type="text" name="content" value={content} onChange={(e) => setContent(e.target.value)}/><br></br>
         <button type="submit" onClick={send}>送信</button><br></br>
         {data ? 
           <div>
