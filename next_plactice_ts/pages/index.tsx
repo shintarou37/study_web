@@ -12,17 +12,15 @@ const fetcher = (...args: any) => fetch(...args).then(res => res.json())
 
 const Home: NextPage = () => {
   const [ address, setAddress ] = useState('http://localhost:8080/')
-  const { data, error } = useSWR(address, fetcher)
+  let { data, error } = useSWR(address, fetcher)
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const send = async () => {
     axios.post(`http://localhost:8080/register?title=${title}&content=${content}`)
-    .then(function (response) {
-      console.log(response.data);
-    })
-    .then((ret)=>{
-      console.log("----------------------ret")
-      console.log(JSON.stringify(ret))
+    .then((response)=> {
+      setTitle("")
+      setContent("")
+      data.push(response.data)
     })
   };
 
@@ -49,9 +47,9 @@ const Home: NextPage = () => {
       <main className={styles.main}>
       <h1>投稿フォーム</h1>
         <label>タイトル:</label><br></br>
-        <input type="text" name="title" onChange={(e) => setTitle(e.target.value)}/><br></br>
+        <input type="text" name="title" value={title} onChange={(e) => setTitle(e.target.value)}/><br></br>
         <label>内容</label><br></br>
-        <input type="text" name="content" onChange={(e) => setContent(e.target.value)}/><br></br>
+        <input type="text" name="content" value={content} onChange={(e) => setContent(e.target.value)}/><br></br>
         <button type="submit" onClick={send}>送信</button><br></br>
         {data ? 
           <div>
