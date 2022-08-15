@@ -68,13 +68,24 @@ func register(w http.ResponseWriter, r *http.Request){
     fmt.Println("パス（\"/register\"）でGOが呼び出された")
     var title string = r.URL.Query().Get("title")
     var content string = r.URL.Query().Get("content")
-    ret := Creat(title, content)
-    fmt.Println(ret)
+    c := Creat(title, content)
+    fmt.Println("c")
+    fmt.Println(c)
+    ret := ReadMulti()
+    // jsonエンコード
+    outputJson, err := json.Marshal(ret)
+    if err != nil {
+        panic(err)
+    }
 
     // ヘッダーをセットする
     w.Header().Set("Access-Control-Allow-Origin", "*")
-    w.Header().Set("Access-Control-Allow-Headers", "*")
-    fmt.Fprint(w, ret)
+    w.Header().Set("Content-Type", "application/json")
+    
+    // jsonをコンソールに出力する
+    // fmt.Println(string(outputJson))
+    // jsonデータを返却する
+    fmt.Fprint(w, string(outputJson))
 }
 
 func Creat(title, content string) bool {
