@@ -66,15 +66,25 @@ func top(w http.ResponseWriter, r *http.Request){
 
 func register(w http.ResponseWriter, r *http.Request){
     fmt.Println("パス（\"/register\"）でGOが呼び出された")
-    var title string = r.URL.Query().Get("title")
-    var content string = r.URL.Query().Get("content")
-    ret := Creat(title, content)
-    fmt.Println(ret)
+
+    // クエリパラメータに含まれた値を使用して構造体を初期化する。
+    var create = Data1{Title: r.URL.Query().Get("title"), Content: r.URL.Query().Get("content")}
+
+    // レコードの作成
+    db.Create(&create)
+    
+    // jsonエンコード
+    outputJson, err := json.Marshal(create)
+    if err != nil {
+        panic(err)
+    }
 
     // ヘッダーをセットする
     w.Header().Set("Access-Control-Allow-Origin", "*")
     w.Header().Set("Access-Control-Allow-Headers", "*")
-    fmt.Fprint(w, ret)
+
+    // jsonデータを返却する
+    fmt.Fprint(w, string(outputJson))
 }
 
 func Creat(title, content string) bool {
