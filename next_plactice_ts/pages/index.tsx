@@ -27,7 +27,7 @@ const Home: NextPage = () => {
   let datas;
   if(data){
     datas = data.map((value: any,key: any)=>{
-      let detal_address = `/detal/?=${value.ID}`;
+      let detal_address = `/detal/?id=${value.ID}`;
       return <ul>
         <h1>{value.ID}番</h1>
         <p>タイトル</p>
