@@ -1,14 +1,14 @@
 import type { NextPage } from 'next'
 import Head from 'next/head'
 import Image from 'next/image'
-import List from './components/list'
 import styles from '../styles/Home.module.css'
 import useSWR from 'swr'
 import { useState, useEffect } from 'react'
 import { title } from 'process'
 import axios from 'axios'
+import Link from 'next/link'
 
-const fetcher = (...args: any) => fetch(...args).then(res => res.json())
+const fetcher = (url: string) => fetch(url).then(res => res.json())
 
 const Home: NextPage = () => {
   console.log("---------------------------------------topレベル")
@@ -16,42 +16,12 @@ const Home: NextPage = () => {
   let { data, error } = useSWR(address, fetcher)
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-  const [te, setTe] = useState('faa');
-  function faFA(){
-    axios.get('http://localhost:8080')
-  .then(function (response) {
-    // console.log("fa start")
-    // console.log(response.data);
-    // data = response.data
-    // data[0].title = "変更するfa"
-    // console.log("fa end")
-  })
-  }
-  // useEffect(() => {
-  //   {console.log("呼ばれました")}
-  // }, [data])
-  let aa: any = []
-
   const send = async () => {
-    setTitle("")
-    setContent("")
     axios.post(`http://localhost:8080/register?title=${title}&content=${content}`)
-    .then((ret)=>{
-      setTe("fafafafa")
-      console.log("----------------------ret")
-      // console.log(JSON.stringify(ret.data))
-      // console.log(data)
-      // data[0]["ID"]
-      data[0].title = "変更する"
-      // data.splice(0)
-      // // console.log(JSON.stringify(data))
-      data = ret.data
-      console.log(JSON.stringify(data))
-      // aa.push(ret.data)
-      // data.push({"title": "test", "content": "test"})
-      // data = useSWR(address, fetcher)
-      // console.log(JSON.stringify(data))
-      // faFA()
+    .then((response)=> {
+      setTitle("")
+      setContent("")
+      data.push(response.data)
     })
   };
   // if(data){
@@ -60,18 +30,19 @@ const Home: NextPage = () => {
 
   let datas;
   if(data){
-    {console.log("map")}
-    {console.log("--------------------------" + JSON.stringify(data))}
-    datas = data.map((value: any,key: any)=>(
-      <ul>
-        <h3>{value.ID}番</h3>
-        タイトル
+    datas = data.map((value: any,key: any)=>{
+      let detal_address = `/detal/?id=${value.ID}`;
+      return <ul>
+        <h1>{value.ID}番</h1>
+        <p>タイトル</p>
         <li>{value.title}</li>
-        内容
-        <li>{value.content}</li>   
+        <p>内容</p>
+        <li>{value.content}</li>
+        <Link href={detal_address}>
+          <a>詳細</a>
+        </Link>
       </ul>
-
-    ))
+    })
   }
 
   return (

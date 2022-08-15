@@ -29,6 +29,7 @@ func main() {
 	}
 
     http.HandleFunc("/", top);
+    http.HandleFunc("/detail", detail);
     http.HandleFunc("/register", register);
     http.ListenAndServe(":8080", nil)
     fmt.Println("End!");
@@ -36,17 +37,8 @@ func main() {
 
 func top(w http.ResponseWriter, r *http.Request){
     fmt.Println("パス（\"/\"）でGOが呼び出された")
+    // 全レコードを取得する
     ret := ReadMulti()
-
-    // var datas = []Data1{}
-    // var data1 = Data1{}
-    // var data2 = Data1{Title: "smaple2", Content: "hello, sample2"}
-    // // fmt.Println(datas)
-    // data1.Title = "sample1"
-    // data1.Content = "hello, sample1"
-    // datas = append(datas, data1)
-    // datas = append(datas, data2)
-    // // fmt.Println(datas)
 
     // jsonエンコード
     outputJson, err := json.Marshal(ret)
@@ -64,14 +56,11 @@ func top(w http.ResponseWriter, r *http.Request){
     fmt.Fprint(w, string(outputJson))
 }
 
-func register(w http.ResponseWriter, r *http.Request){
-    fmt.Println("パス（\"/register\"）でGOが呼び出された")
-    var title string = r.URL.Query().Get("title")
-    var content string = r.URL.Query().Get("content")
-    c := Creat(title, content)
-    fmt.Println("c")
-    fmt.Println(c)
-    ret := ReadMulti()
+func detail(w http.ResponseWriter, r *http.Request){
+    fmt.Println("パス（\"/detail\"）でGOが呼び出された")
+    var id string = r.URL.Query().Get("id")
+    ret := Read(id)
+
     // jsonエンコード
     outputJson, err := json.Marshal(ret)
     if err != nil {
@@ -81,9 +70,30 @@ func register(w http.ResponseWriter, r *http.Request){
     // ヘッダーをセットする
     w.Header().Set("Access-Control-Allow-Origin", "*")
     w.Header().Set("Content-Type", "application/json")
+
+    // jsonデータを返却する
+    fmt.Fprint(w, string(outputJson))
+}
+
+func register(w http.ResponseWriter, r *http.Request){
+    fmt.Println("パス（\"/register\"）でGOが呼び出された")
+
+    // クエリパラメータに含まれた値を使用して構造体を初期化する。
+    var create = Data1{Title: r.URL.Query().Get("title"), Content: r.URL.Query().Get("content")}
+
+    // レコードの作成
+    db.Create(&create)
     
-    // jsonをコンソールに出力する
-    // fmt.Println(string(outputJson))
+    // jsonエンコード
+    outputJson, err := json.Marshal(create)
+    if err != nil {
+        panic(err)
+    }
+
+    // ヘッダーをセットする
+    w.Header().Set("Access-Control-Allow-Origin", "*")
+    w.Header().Set("Access-Control-Allow-Headers", "*")
+
     // jsonデータを返却する
     fmt.Fprint(w, string(outputJson))
 }
@@ -118,10 +128,12 @@ func ReadMulti()[]Data1{
     return data1_arr
 }
 
-func Read(db *gorm.DB){
+func Read(id string) Data1{
     var data1 Data1
-    db.Debug().First(data1, 2)
+    // ポインタを引数にしない場合はエラーになる
+    db.Debug().First(&data1, id)
     fmt.Println(data1)
+    return data1
 }
 
 func Update(db *gorm.DB){
