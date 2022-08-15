@@ -1,12 +1,12 @@
 import type { NextPage } from 'next'
 import Head from 'next/head'
 import Image from 'next/image'
-import List from './components/list'
 import styles from '../styles/Home.module.css'
 import useSWR from 'swr'
 import {useState} from 'react'
 import { title } from 'process'
 import axios from 'axios'
+import Link from 'next/link'
 
 const fetcher = (...args: any) => fetch(...args).then(res => res.json())
 
@@ -25,18 +25,21 @@ const Home: NextPage = () => {
   };
 
   let datas;
-  {if(data){
-    datas = data.map((value: any,key: any)=>(
-      <ul>
+  if(data){
+    datas = data.map((value: any,key: any)=>{
+      let detal_address = `/detal/?=${value.ID}`;
+      return <ul>
         <h1>{value.ID}番</h1>
         <p>タイトル</p>
         <li>{value.title}</li>
         <p>内容</p>
-        <li>{value.content}</li>   
+        <li>{value.content}</li>
+        <Link href={detal_address}>
+          <a>詳細</a>
+        </Link>
       </ul>
-
-    ))
-  }}
+    })
+  }
 
   return (
     <div className={styles.container}>
