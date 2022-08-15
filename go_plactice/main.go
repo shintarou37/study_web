@@ -36,17 +36,8 @@ func main() {
 
 func top(w http.ResponseWriter, r *http.Request){
     fmt.Println("パス（\"/\"）でGOが呼び出された")
+    // 全レコードを取得する
     ret := ReadMulti()
-
-    // var datas = []Data1{}
-    // var data1 = Data1{}
-    // var data2 = Data1{Title: "smaple2", Content: "hello, sample2"}
-    // // fmt.Println(datas)
-    // data1.Title = "sample1"
-    // data1.Content = "hello, sample1"
-    // datas = append(datas, data1)
-    // datas = append(datas, data2)
-    // // fmt.Println(datas)
 
     // jsonエンコード
     outputJson, err := json.Marshal(ret)
