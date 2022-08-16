@@ -138,7 +138,7 @@ func edit(w http.ResponseWriter, r *http.Request){
     削除機能
 */
 func delete(w http.ResponseWriter, r *http.Request){
-    fmt.Println("パス（\"/edit\"）でGOが呼び出された")
+    fmt.Println("パス（\"/delete\"）でGOが呼び出された")
 
     // クエリパラメータに含まれたレコードのIDカラムを取得する
     id := r.URL.Query().Get("id")
@@ -150,7 +150,7 @@ func delete(w http.ResponseWriter, r *http.Request){
     // ヘッダーをセットする
     w.Header().Set("Access-Control-Allow-Origin", "*")
     w.Header().Set("Access-Control-Allow-Headers", "*")
-
+    w.Header().Set("Access-Control-Allow-Methods","GET, POST, PUT, DELETE, OPTIONS")
     // データを返却する
     fmt.Fprint(w, true)
 }
