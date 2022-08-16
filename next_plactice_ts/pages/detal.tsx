@@ -12,15 +12,15 @@ export default function Detail() {
   const router = useRouter()
   // クエリパラメーターを取得する
   const { id } = router.query
-  const { data, error } = useSWR(`http://localhost:8080/detail?id=${id}`, fetcher)
+  let { data, error } = useSWR(`http://localhost:8080/detail?id=${id}`, fetcher)
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const send = async () => {
-    axios.post(`http://localhost:8080/edit?title=${title}&content=${content}`)
+    axios.post(`http://localhost:8080/edit?id=${id}&title=${title}&content=${content}`)
     .then((response)=> {
       setTitle("")
       setContent("")
-      data.push(response.data)
+      data = response.data
     })
   };
   return (
