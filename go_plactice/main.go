@@ -32,6 +32,7 @@ func main() {
     http.HandleFunc("/detail", detail);
     http.HandleFunc("/edit", edit);
     http.HandleFunc("/register", register);
+    http.HandleFunc("/delete", delete);
     http.ListenAndServe(":8080", nil)
     fmt.Println("End!");
 }
@@ -131,6 +132,27 @@ func edit(w http.ResponseWriter, r *http.Request){
 
     // jsonデータを返却する
     fmt.Fprint(w, string(outputJson))
+}
+
+/* 
+    削除機能
+*/
+func delete(w http.ResponseWriter, r *http.Request){
+    fmt.Println("パス（\"/edit\"）でGOが呼び出された")
+
+    // クエリパラメータに含まれたレコードのIDカラムを取得する
+    id := r.URL.Query().Get("id")
+
+    // データの削除
+    var data1 Data1
+    db.Debug().Delete(&data1, id)
+
+    // ヘッダーをセットする
+    w.Header().Set("Access-Control-Allow-Origin", "*")
+    w.Header().Set("Access-Control-Allow-Headers", "*")
+
+    // データを返却する
+    fmt.Fprint(w, true)
 }
 
 func Creat(title, content string) bool {
