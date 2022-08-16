@@ -2,7 +2,7 @@ import type { NextPage } from 'next'
 import Head from 'next/head'
 import Image from 'next/image'
 import styles from '../styles/Home.module.css'
-import useSWR from 'swr'
+import useSWR, { useSWRConfig } from 'swr'
 import { useState, useEffect } from 'react'
 import { title } from 'process'
 import axios from 'axios'
@@ -11,9 +11,9 @@ import Link from 'next/link'
 const fetcher = (url: string) => fetch(url).then(res => res.json())
 
 const Home: NextPage = () => {
-  console.log("---------------------------------------topレベル")
+  const { mutate } = useSWRConfig()
   const [ address, setAddress ] = useState('http://localhost:8080/')
-  let { data, error } = useSWR(address, fetcher)
+  const { data, error } = useSWR(address, fetcher)
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const sendRegister = async () => {
@@ -21,12 +21,11 @@ const Home: NextPage = () => {
     .then((response)=> {
       setTitle("")
       setContent("")
-      data.push(response.data)
+      
+      // SWRがrefetchを行う
+      mutate("http://localhost:8080/")
     })
   };
-  // if(data){
-  //   console.log(JSON.stringify(data[0].title))
-  // }
 
   let datas;
   if(data){

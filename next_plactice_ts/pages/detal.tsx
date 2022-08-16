@@ -28,7 +28,8 @@ export default function Detail() {
   };
   const sendDelete = async () => {
     axios.delete(`http://localhost:8080/delete?id=${id}`)
-    .then((response)=> {
+    .then(()=> {
+      router.push("/")
     })
   };
   return (
