@@ -20,7 +20,9 @@ export default function Detail() {
     .then((response)=> {
       setTitle("")
       setContent("")
-      data = response.data
+      data.title = response.data.title
+      data.content = response.data.content
+      data.UpdatedAt = response.data.UpdatedAt
     })
   };
   return (
