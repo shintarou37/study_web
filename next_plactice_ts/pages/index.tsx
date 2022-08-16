@@ -7,6 +7,7 @@ import { useState, useEffect } from 'react'
 import { title } from 'process'
 import axios from 'axios'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
 
 const fetcher = (url: string) => fetch(url).then(res => res.json())
 
@@ -16,17 +17,21 @@ const Home: NextPage = () => {
   const { data, error } = useSWR(address, fetcher)
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
+  const router = useRouter()
+
   const sendRegister = async () => {
     axios.post(`http://localhost:8080/register?title=${title}&content=${content}`)
-    .then((response)=> {
+    .then(()=> {
       setTitle("")
       setContent("")
-      
       // SWRがrefetchを行う
       mutate("http://localhost:8080/")
     })
+    .catch(()=> {
+      router.push("/_error")
+    });
   };
-
+  
   let datas;
   if(data){
     datas = data.map((value: any,key: any)=>{
