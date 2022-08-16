@@ -41,21 +41,24 @@ func main() {
 */
 func top(w http.ResponseWriter, r *http.Request){
     fmt.Println("パス（\"/\"）でGOが呼び出された")
+    // fmt.Fprint(w, "false")
     // 全レコードを取得する
-    // エラーが起きた場合はこれ以下の処理は行われず、Web画面ではデータが表示されない
-    ret := ReadMulti()
-
-    // jsonエンコード
+    ret, grm_err := ReadMulti()
+    fmt.Println(grm_err)
+    if !grm_err{fmt.Println("falseだお")}
+    // // jsonエンコード
     outputJson, err := json.Marshal(ret)
-    if err != nil {
-        panic(err)
+    // // エラーが起きた場合はこれ以下の処理は行われない
+    if err != nil || !grm_err{
+        fmt.Fprint(w, false)
+        // panic("err")
     }
 
-    // ヘッダーをセットする
+    // // ヘッダーをセットする
     w.Header().Set("Access-Control-Allow-Origin", "*")
     w.Header().Set("Content-Type", "application/json")
     
-    // jsonデータを返却する
+    // // jsonデータを返却する
     fmt.Fprint(w, string(outputJson))
 }
 
@@ -73,11 +76,11 @@ func detail(w http.ResponseWriter, r *http.Request){
 		panic("no query params")
 	}
 
-    ret := Read(id)
+    ret, error := Read(id)
 
     // jsonエンコード
     outputJson, err := json.Marshal(ret)
-    if err != nil {
+    if err != nil || error == false{
         panic(err)
     }
 
@@ -130,8 +133,8 @@ func edit(w http.ResponseWriter, r *http.Request){
 
     // レコードの更新
     db.Debug().Model(&Data1{}).Where("id = ?", id).Updates(Data1{Title: r.URL.Query().Get("title"), Content: r.URL.Query().Get("content")})
-    ret := Read(id)
-
+    ret, errr := Read(id)
+    fmt.Println(errr)
     // jsonエンコード
     outputJson, err := json.Marshal(ret)
     if err != nil {
@@ -166,6 +169,20 @@ func delete(w http.ResponseWriter, r *http.Request){
     // データを返却する
     fmt.Fprint(w, true)
 }
+/* 
+    戻り値を指定していないと
+    「too many return values have ([]Data1) want ()compilerWrongResultCount」
+    というエラーになる。
+    パス：top
+*/
+func ReadMulti()([]Data1, bool){
+    var data1_arr []Data1
+    // return data1_arr, false
+    if err := db.Debug().Find(&data1_arr).Error; err != nil {
+		return data1_arr, false
+	}
+    return data1_arr, true
+}
 
 func Creat(title, content string) bool {
     if err := db.Debug().Create(&Data1{Title: title, Content: content}).Error; err != nil {
@@ -186,29 +203,15 @@ func CreatMulti(title, content string){
 		return
 	}
 }
-/* 
-    戻り値を指定していないと
-    「too many return values have ([]Data1) want ()compilerWrongResultCount」
-    というエラーになる。
-*/
-func ReadMulti()[]Data1{
-    var data1_arr []Data1
-    if err := db.Debug().Find(&data1_arr).Error; err != nil {
-		panic(err)
-	}
-    return data1_arr
-}
 
-func Read(id string) Data1{
+func Read(id string) (Data1, bool){
     var data1 Data1
     // ポインタを引数にしない場合はエラーになる
     if err := db.Debug().First(&data1, id).Error; err != nil {
         fmt.Println("error happen!")
-		fmt.Println(err)
-        // エラーが起きた場合はエラーページに遷移する
-		panic(err)
+		return data1, true
 	}
-    return data1
+    return data1, true
 }
 
 func Update(db *gorm.DB){
