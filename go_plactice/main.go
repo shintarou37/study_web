@@ -30,11 +30,14 @@ func main() {
 
     http.HandleFunc("/", top);
     http.HandleFunc("/detail", detail);
+    http.HandleFunc("/edit", edit);
     http.HandleFunc("/register", register);
     http.ListenAndServe(":8080", nil)
     fmt.Println("End!");
 }
-
+/* 
+    Top画面 
+*/
 func top(w http.ResponseWriter, r *http.Request){
     fmt.Println("パス（\"/\"）でGOが呼び出された")
     // 全レコードを取得する
@@ -56,6 +59,9 @@ func top(w http.ResponseWriter, r *http.Request){
     fmt.Fprint(w, string(outputJson))
 }
 
+/* 
+    詳細画面
+*/
 func detail(w http.ResponseWriter, r *http.Request){
     fmt.Println("パス（\"/detail\"）でGOが呼び出された")
     var id string = r.URL.Query().Get("id")
@@ -74,7 +80,9 @@ func detail(w http.ResponseWriter, r *http.Request){
     // jsonデータを返却する
     fmt.Fprint(w, string(outputJson))
 }
-
+/* 
+    登録機能
+*/
 func register(w http.ResponseWriter, r *http.Request){
     fmt.Println("パス（\"/register\"）でGOが呼び出された")
 
@@ -86,6 +94,33 @@ func register(w http.ResponseWriter, r *http.Request){
     
     // jsonエンコード
     outputJson, err := json.Marshal(create)
+    if err != nil {
+        panic(err)
+    }
+
+    // ヘッダーをセットする
+    w.Header().Set("Access-Control-Allow-Origin", "*")
+    w.Header().Set("Access-Control-Allow-Headers", "*")
+
+    // jsonデータを返却する
+    fmt.Fprint(w, string(outputJson))
+}
+
+/* 
+    編集機能
+*/
+func edit(w http.ResponseWriter, r *http.Request){
+    fmt.Println("パス（\"/edit\"）でGOが呼び出された")
+
+    // クエリパラメータに含まれたレコードのIDカラムを取得する
+    id := r.URL.Query().Get("id")
+
+    // レコードの更新
+    db.Debug().Model(&Data1{}).Where("id = ?", id).Updates(Data1{Title: r.URL.Query().Get("title"), Content: r.URL.Query().Get("content")})
+    ret := Read(id)
+
+    // jsonエンコード
+    outputJson, err := json.Marshal(ret)
     if err != nil {
         panic(err)
     }
