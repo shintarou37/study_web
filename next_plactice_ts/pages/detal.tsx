@@ -15,7 +15,7 @@ export default function Detail() {
   let { data, error } = useSWR(`http://localhost:8080/detail?id=${id}`, fetcher)
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-  const send = async () => {
+  const sendUpdate = async () => {
     axios.post(`http://localhost:8080/edit?id=${id}&title=${title}&content=${content}`)
     .then((response)=> {
       setTitle("")
@@ -23,6 +23,11 @@ export default function Detail() {
       data.title = response.data.title
       data.content = response.data.content
       data.UpdatedAt = response.data.UpdatedAt
+    })
+  };
+  const sendDelete = async () => {
+    axios.post(`http://localhost:8080/edit?id=${id}`)
+    .then((response)=> {
     })
   };
   return (
@@ -55,7 +60,8 @@ export default function Detail() {
       <input type="text" name="title" value={title} onChange={(e) => setTitle(e.target.value)}/><br></br>
       <label>内容</label><br></br>
       <input type="text" name="content" value={content} onChange={(e) => setContent(e.target.value)}/><br></br>
-      <button type="submit" onClick={send}>更新</button><br></br>
+      <button type="submit" onClick={sendUpdate}>更新</button><br></br>
+      <button type="submit" onClick={sendDelete}>削除</button><br></br>
       <Link href="/">
           <a>トップ画面へ戻る</a>
       </Link>

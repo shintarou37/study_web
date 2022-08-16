@@ -16,7 +16,7 @@ const Home: NextPage = () => {
   let { data, error } = useSWR(address, fetcher)
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-  const send = async () => {
+  const sendRegister = async () => {
     axios.post(`http://localhost:8080/register?title=${title}&content=${content}`)
     .then((response)=> {
       setTitle("")
@@ -57,7 +57,7 @@ const Home: NextPage = () => {
         <input type="text" name="title" value={title} onChange={(e) => setTitle(e.target.value)}/><br></br>
         <label>内容</label><br></br>
         <input type="text" name="content" value={content} onChange={(e) => setContent(e.target.value)}/><br></br>
-        <button type="submit" onClick={send}>送信</button><br></br>
+        <button type="submit" onClick={sendRegister}>送信</button><br></br>
         {data ? 
           <div>
             {datas}
