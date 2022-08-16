@@ -20,13 +20,14 @@ export default function Detail() {
     .then((response)=> {
       setTitle("")
       setContent("")
+      // 変数を全て変更すると反映されないため必要なキーを指定して変更している
       data.title = response.data.title
       data.content = response.data.content
       data.UpdatedAt = response.data.UpdatedAt
     })
   };
   const sendDelete = async () => {
-    axios.post(`http://localhost:8080/edit?id=${id}`)
+    axios.delete(`http://localhost:8080/delete?id=${id}`)
     .then((response)=> {
     })
   };
