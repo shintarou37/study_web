@@ -25,7 +25,7 @@ func main() {
     dsn := "root:@tcp(127.0.0.1:3306)/go_plactice?charset=utf8mb4&parseTime=True&loc=Local"
     db, db_err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
     if db_err != nil {
-		panic("failed to connect database")
+		panic(db_err)
 	}
 
     http.HandleFunc("/", top);
@@ -42,6 +42,7 @@ func main() {
 func top(w http.ResponseWriter, r *http.Request){
     fmt.Println("パス（\"/\"）でGOが呼び出された")
     // 全レコードを取得する
+    // エラーが起きた場合はこれ以下の処理は行われず、Web画面ではデータが表示されない
     ret := ReadMulti()
 
     // jsonエンコード
@@ -54,8 +55,6 @@ func top(w http.ResponseWriter, r *http.Request){
     w.Header().Set("Access-Control-Allow-Origin", "*")
     w.Header().Set("Content-Type", "application/json")
     
-    // jsonをコンソールに出力する
-    // fmt.Println(string(outputJson))
     // jsonデータを返却する
     fmt.Fprint(w, string(outputJson))
 }
@@ -66,6 +65,14 @@ func top(w http.ResponseWriter, r *http.Request){
 func detail(w http.ResponseWriter, r *http.Request){
     fmt.Println("パス（\"/detail\"）でGOが呼び出された")
     var id string = r.URL.Query().Get("id")
+
+    // React側で画面をリロードするとクエリパラメータがundefinedで送付される
+    // その場合は"false"という文字列がパラメーターとして送信されてsqlは発行しない
+	if id == "false" {
+        fmt.Println("error")
+		panic("no query params")
+	}
+
     ret := Read(id)
 
     // jsonエンコード
@@ -91,7 +98,12 @@ func register(w http.ResponseWriter, r *http.Request){
     var create = Data1{Title: r.URL.Query().Get("title"), Content: r.URL.Query().Get("content")}
 
     // レコードの作成
-    db.Create(&create)
+    if err := db.Create(&create).Error; err != nil {
+        fmt.Println("error happen!")
+		fmt.Println(err)
+        // エラーが起きた場合はエラーページに遷移する
+		panic(err)
+	}
     
     // jsonエンコード
     outputJson, err := json.Marshal(create)
@@ -181,15 +193,21 @@ func CreatMulti(title, content string){
 */
 func ReadMulti()[]Data1{
     var data1_arr []Data1
-    db.Debug().Find(&data1_arr)
+    if err := db.Debug().Find(&data1_arr).Error; err != nil {
+		panic(err)
+	}
     return data1_arr
 }
 
 func Read(id string) Data1{
     var data1 Data1
     // ポインタを引数にしない場合はエラーになる
-    db.Debug().First(&data1, id)
-    fmt.Println(data1)
+    if err := db.Debug().First(&data1, id).Error; err != nil {
+        fmt.Println("error happen!")
+		fmt.Println(err)
+        // エラーが起きた場合はエラーページに遷移する
+		panic(err)
+	}
     return data1
 }
 
