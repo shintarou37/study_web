@@ -18,7 +18,10 @@ const Home: NextPage = () => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const router = useRouter()
-
+  console.log("----------------------" + data)
+  if(data === false){
+    router.push("/_error")
+  }
   const sendRegister = async () => {
     axios.post(`http://localhost:8080/register?title=${title}&content=${content}`)
     .then(()=> {
@@ -31,7 +34,7 @@ const Home: NextPage = () => {
       router.push("/_error")
     });
   };
-  
+
   let datas;
   if(data){
     datas = data.map((value: any,key: any)=>{

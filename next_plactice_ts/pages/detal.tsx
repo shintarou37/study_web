@@ -17,6 +17,7 @@ export default function Detail() {
     id = "false"
   }
   let { data, error } = useSWR(`http://localhost:8080/detail?id=${id}`, fetcher)
+  console.log("----------------------" + data)
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const sendUpdate = async () => {
