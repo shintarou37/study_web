@@ -9,19 +9,29 @@ import axios from 'axios'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 
-const fetcher = (url: string) => fetch(url).then(res => res.json())
-
 const Home: NextPage = () => {
   const { mutate } = useSWRConfig()
   const [ address, setAddress ] = useState('http://localhost:8080/')
+  const fetcher = async (address: string) => {
+    const res = await fetch(address)
+    console.log("res.status---------------------------------------  " + res.status)
+    // もしステータスコードが 200-299 の範囲内では無い場合、
+    // レスポンスをパースして投げようとします。
+    if (!res.ok) {
+      const error = new Error('An error occurred while fetching the data.')
+      // エラーオブジェクトに追加情報を付与します。
+      // error.info = await res.json()
+      // error.status: any = res.status
+      router.push("/_error")
+      throw error
+    }
+  
+    return res.json()
+  }
   const { data, error } = useSWR(address, fetcher)
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const router = useRouter()
-  console.log("----------------------" + data)
-  if(data === false){
-    router.push("/_error")
-  }
   const sendRegister = async () => {
     axios.post(`http://localhost:8080/register?title=${title}&content=${content}`)
     .then(()=> {
