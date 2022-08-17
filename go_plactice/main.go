@@ -110,22 +110,25 @@ func main() {
 */
 func top(w http.ResponseWriter, r *http.Request){
     fmt.Println("パス（\"/\"）でGOが呼び出された")
+
+    // ヘッダーをセットする（エラー処理後にセットするとCROSエラーになる）
+    w.Header().Set("Access-Control-Allow-Origin", "*")
+    w.Header().Set("Access-Control-Allow-Headers", "*")
+    w.Header().Set("Content-Type", "application/json")
+
     // 全レコードを取得する
     ret, grm_err := ReadMulti()
 
     // jsonエンコード
     outputJson, err := json.Marshal(ret)
 
-    //  エラーが起きた場合はこれ以下の処理は行われない
+    // エラー処理
     if err != nil || !grm_err{
+        fmt.Println("error happen!")
         w.WriteHeader(http.StatusInternalServerError)
     }
 
-    // // ヘッダーをセットする
-    w.Header().Set("Access-Control-Allow-Origin", "*")
-    w.Header().Set("Content-Type", "application/json")
-
-    // jsonデータを返却する
+    // jsonデータを返却する（エラーが発生した場合は空のオブジェクトを返却する）
     fmt.Fprint(w, string(outputJson))
 }
 
