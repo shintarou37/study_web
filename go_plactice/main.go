@@ -171,7 +171,7 @@ func delete(w http.ResponseWriter, r *http.Request){
     // ヘッダーをセットする
     w.Header().Set("Access-Control-Allow-Origin", "*")
     w.Header().Set("Access-Control-Allow-Headers", "*")
-    w.Header().Set("Access-Control-Allow-Methods","GET, DELETE")
+    w.Header().Set("Access-Control-Allow-Methods","GET, POST, PUT, DELETE, OPTIONS")
 
     // 任意のデータを返却する（データは使用しないので値は任意）
     fmt.Fprint(w, string(id))
