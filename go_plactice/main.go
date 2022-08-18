@@ -91,7 +91,7 @@ var db_err error
 
 func main() {
     fmt.Println("Start!");
-    dsn := "root:secualpass@tcp(127.0.0.1:3306)/go_plactice?charset=utf8mb4&parseTime=True&loc=Local"
+    dsn := "root:@tcp(127.0.0.1:3306)/go_plactice?charset=utf8mb4&parseTime=True&loc=Local"
     db, db_err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
     if db_err != nil {
 		panic(db_err)
@@ -151,11 +151,14 @@ func detail(w http.ResponseWriter, r *http.Request){
 		panic("no query params")
         // これ以降の処理は行われない
 	}
-    ret, error := Read(id)
+    
+    ret, grm_err := Read(id)
 
     // jsonエンコード
     outputJson, err := json.Marshal(ret)
-    if err != nil || error == false{
+
+    // エラー処理
+    if err != nil || !grm_err {
         fmt.Println("error happen!")
         w.WriteHeader(http.StatusInternalServerError)
     }
