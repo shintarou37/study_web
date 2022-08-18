@@ -6,18 +6,17 @@ import axios from 'axios'
 import Head from 'next/head'
 import styles from '../styles/Home.module.css'
 
-
 export default function Detail() {
   const router = useRouter()
-  const [ address, setAddress ] = useState('http://localhost:8080/')
   // クエリパラメーターを取得する
   let { id } = router.query;
   // クエリパラメーターを取得できなかった場合は"false"という文字列を格納する
   if(!id){
     id = "false"
   }
+  // fetcher関数の第一引数にはuseSWRの第一引数が入る
   const fetcher = async (address: string) => {
-    const res = await fetch(`${address}detail?id=${id}`)
+    const res = await fetch(address)
     // もしステータスコードが 200-299 の範囲内では無い場合はエラーページに遷移する
     if (!res.ok) {
       router.push("/_error")
@@ -27,7 +26,6 @@ export default function Detail() {
   }
   let { data, error } = useSWR(`http://localhost:8080/detail?id=${id}`, fetcher)
 
-  console.log("----------------------" + data)
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const sendUpdate = async () => {
