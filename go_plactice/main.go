@@ -117,13 +117,13 @@ func top(w http.ResponseWriter, r *http.Request){
     w.Header().Set("Content-Type", "application/json")
 
     // 全レコードを取得する
-    ret, grm_err := ReadMulti()
+    ret, orm_err := ReadMulti()
 
     // jsonエンコード
     outputJson, err := json.Marshal(ret)
 
     // エラー処理
-    if err != nil || !grm_err{
+    if err != nil || !orm_err{
         fmt.Println("error happen!")
         w.WriteHeader(http.StatusInternalServerError)
     }
@@ -152,13 +152,13 @@ func detail(w http.ResponseWriter, r *http.Request){
         // これ以降の処理は行われない
 	}
     
-    ret, grm_err := Read(id)
+    ret, orm_err := Read(id)
 
     // jsonエンコード
     outputJson, err := json.Marshal(ret)
 
     // エラー処理
-    if err != nil || !grm_err {
+    if err != nil || !orm_err {
         fmt.Println("error happen!")
         w.WriteHeader(http.StatusInternalServerError)
     }
@@ -176,19 +176,17 @@ func register(w http.ResponseWriter, r *http.Request){
     var create = Data1{Title: r.URL.Query().Get("title"), Content: r.URL.Query().Get("content")}
 
     // レコードの作成
-    if err := db.Create(&create).Error; err != nil {
+    if orm_err := db.Create(&create).Error; orm_err != nil {
         fmt.Println("error happen!")
-		fmt.Println(err)
-        // エラーが起きた場合はエラーページに遷移する
-		panic(err)
+		w.WriteHeader(http.StatusInternalServerError)
 	}
     
     // jsonエンコード
     outputJson, err := json.Marshal(create)
     if err != nil {
-        panic(err)
+        w.WriteHeader(http.StatusInternalServerError)
     }
-
+    
     // ヘッダーをセットする
     w.Header().Set("Access-Control-Allow-Origin", "*")
     w.Header().Set("Access-Control-Allow-Headers", "*")
