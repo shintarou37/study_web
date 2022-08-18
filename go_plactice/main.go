@@ -91,7 +91,7 @@ var db_err error
 
 func main() {
     fmt.Println("Start!");
-    dsn := "root:@tcp(127.0.0.1:3306)/go_plactice?charset=utf8mb4&parseTime=True&loc=Local"
+    dsn := "root:secualpass@tcp(127.0.0.1:3306)/go_plactice?charset=utf8mb4&parseTime=True&loc=Local"
     db, db_err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
     if db_err != nil {
 		panic(db_err)
@@ -137,26 +137,28 @@ func top(w http.ResponseWriter, r *http.Request){
 */
 func detail(w http.ResponseWriter, r *http.Request){
     fmt.Println("パス（\"/detail\"）でGOが呼び出された")
+
+    // ヘッダーをセットする
+    w.Header().Set("Access-Control-Allow-Origin", "*")
+    w.Header().Set("Content-Type", "application/json")
+
+    // クエリパラメータ「id」を取得する
     var id string = r.URL.Query().Get("id")
 
     // React側で画面をリロードするとクエリパラメータがundefinedで送付される
     // その場合は"false"という文字列がパラメーターとして送信されてsqlは発行しない
 	if id == "false" {
-        fmt.Println("error")
 		panic("no query params")
+        // これ以降の処理は行われない
 	}
-
     ret, error := Read(id)
 
     // jsonエンコード
     outputJson, err := json.Marshal(ret)
     if err != nil || error == false{
-        panic(err)
+        fmt.Println("error happen!")
+        w.WriteHeader(http.StatusInternalServerError)
     }
-
-    // ヘッダーをセットする
-    w.Header().Set("Access-Control-Allow-Origin", "*")
-    w.Header().Set("Content-Type", "application/json")
 
     // jsonデータを返却する
     fmt.Fprint(w, string(outputJson))
@@ -276,6 +278,7 @@ func CreatMulti(title, content string){
 
 func Read(id string) (Data1, bool){
     var data1 Data1
+    // return data1, false
     // ポインタを引数にしない場合はエラーになる
     if err := db.Debug().First(&data1, id).Error; err != nil {
         fmt.Println("error happen!")
