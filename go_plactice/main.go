@@ -186,7 +186,7 @@ func register(w http.ResponseWriter, r *http.Request){
     if err != nil {
         w.WriteHeader(http.StatusInternalServerError)
     }
-    
+
     // ヘッダーをセットする
     w.Header().Set("Access-Control-Allow-Origin", "*")
     w.Header().Set("Access-Control-Allow-Headers", "*")
@@ -205,21 +205,17 @@ func edit(w http.ResponseWriter, r *http.Request){
     id := r.URL.Query().Get("id")
 
     // レコードの更新
-    db.Debug().Model(&Data1{}).Where("id = ?", id).Updates(Data1{Title: r.URL.Query().Get("title"), Content: r.URL.Query().Get("content")})
-    ret, errr := Read(id)
-    fmt.Println(errr)
-    // jsonエンコード
-    outputJson, err := json.Marshal(ret)
-    if err != nil {
-        panic(err)
-    }
+    if orm_err := db.Debug().Model(&Data1{}).Where("id = ?", id).Updates(Data1{Title: r.URL.Query().Get("title"), Content: r.URL.Query().Get("content")}).Error; orm_err != nil {
+        fmt.Println("error happen!")
+		w.WriteHeader(http.StatusInternalServerError)
+	}
 
     // ヘッダーをセットする
     w.Header().Set("Access-Control-Allow-Origin", "*")
     w.Header().Set("Access-Control-Allow-Headers", "*")
 
-    // jsonデータを返却する
-    fmt.Fprint(w, string(outputJson))
+    // 任意のデータを返却する（データは使用しないので値は任意）
+    fmt.Fprint(w, string(id))
 }
 
 /* 
