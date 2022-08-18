@@ -14,16 +14,9 @@ const Home: NextPage = () => {
   const [ address, setAddress ] = useState('http://localhost:8080/')
   const fetcher = async (address: string) => {
     const res = await fetch(address)
-    console.log("res.status---------------------------------------  " + res.status)
-    // もしステータスコードが 200-299 の範囲内では無い場合、
-    // レスポンスをパースして投げようとします。
+    // もしステータスコードが 200-299 の範囲内では無い場合はエラーページに遷移する
     if (!res.ok) {
-      const error = new Error('An error occurred while fetching the data.')
-      // エラーオブジェクトに追加情報を付与します。
-      // error.info = await res.json()
-      // error.status: any = res.status
       router.push("/_error")
-      throw error
     }
   
     return res.json()
