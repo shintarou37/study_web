@@ -47,6 +47,10 @@ export default function Detail() {
     .then(()=> {
       router.push("/")
     })
+    // Go側でエラーがあった場合
+    .catch(()=> {
+      router.push("/_error")
+    });
   };
   // dataがない場合に戻り値を渡すと一瞬レイアウトが崩れる
   if(data){
