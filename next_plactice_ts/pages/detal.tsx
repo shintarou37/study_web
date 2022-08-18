@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import useSWR from 'swr'
+import useSWR, { useSWRConfig } from 'swr'
 import { useRouter } from 'next/router'
 import { useState } from 'react'
 import axios from 'axios'
@@ -7,6 +7,7 @@ import Head from 'next/head'
 import styles from '../styles/Home.module.css'
 
 export default function Detail() {
+  const { mutate } = useSWRConfig()
   const router = useRouter()
   // クエリパラメーターを取得する
   let { id } = router.query;
@@ -24,20 +25,22 @@ export default function Detail() {
   
     return res.json()
   }
-  let { data, error } = useSWR(`http://localhost:8080/detail?id=${id}`, fetcher)
+  const { data, error } = useSWR(`http://localhost:8080/detail?id=${id}`, fetcher)
 
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const sendUpdate = async () => {
     axios.post(`http://localhost:8080/edit?id=${id}&title=${title}&content=${content}`)
-    .then((response)=> {
+    .then(()=> {
       setTitle("")
       setContent("")
-      // 変数を全て変更すると反映されないため必要なキーを指定して変更している
-      data.title = response.data.title
-      data.content = response.data.content
-      data.UpdatedAt = response.data.UpdatedAt
+      // SWRがrefetchを行う
+      mutate(`http://localhost:8080/detail?id=${id}`)
     })
+    // Go側でエラーがあった場合
+    .catch(()=> {
+      router.push("/_error")
+    });
   };
   const sendDelete = async () => {
     axios.delete(`http://localhost:8080/delete?id=${id}`)
