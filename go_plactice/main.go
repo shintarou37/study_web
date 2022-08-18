@@ -229,14 +229,18 @@ func delete(w http.ResponseWriter, r *http.Request){
 
     // データの削除
     var data1 Data1
-    db.Debug().Delete(&data1, id)
+    if orm_err := db.Debug().Delete(&data1, id).Error; orm_err != nil {
+        fmt.Println("error happen!")
+		w.WriteHeader(http.StatusInternalServerError)
+	}
 
     // ヘッダーをセットする
     w.Header().Set("Access-Control-Allow-Origin", "*")
     w.Header().Set("Access-Control-Allow-Headers", "*")
-    w.Header().Set("Access-Control-Allow-Methods","GET, POST, PUT, DELETE, OPTIONS")
-    // データを返却する
-    fmt.Fprint(w, true)
+    w.Header().Set("Access-Control-Allow-Methods","GET, DELETE")
+
+    // 任意のデータを返却する（データは使用しないので値は任意）
+    fmt.Fprint(w, string(id))
 }
 /* 
     戻り値を指定していないと
