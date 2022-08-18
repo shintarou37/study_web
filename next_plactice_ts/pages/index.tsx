@@ -33,6 +33,7 @@ const Home: NextPage = () => {
       // SWRがrefetchを行う
       mutate("http://localhost:8080/")
     })
+    // Go側でエラーがあった場合
     .catch(()=> {
       router.push("/_error")
     });
