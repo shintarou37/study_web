@@ -1,47 +1,46 @@
 import type { NextPage } from 'next'
 import Head from 'next/head'
-import Image from 'next/image'
 import styles from '../styles/Home.module.css'
 import useSWR, { useSWRConfig } from 'swr'
-import { useState, useEffect } from 'react'
-import { title } from 'process'
+import { useState } from 'react'
 import axios from 'axios'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 
 const Home: NextPage = () => {
-  const { mutate } = useSWRConfig()
-  const [ address, setAddress ] = useState('http://localhost:8080/')
+  const address: string = 'http://localhost:8080/';
+  const router = useRouter();
   const fetcher = async (address: string) => {
-    const res = await fetch(address)
+    const res = await fetch(address);
     // もしステータスコードが 200-299 の範囲内では無い場合はエラーページに遷移する
     if (!res.ok) {
-      router.push("/_error")
+      router.push("/_error");
     }
-  
-    return res.json()
+    return res.json();
   }
+
+  const { mutate } = useSWRConfig();
   const { data, error } = useSWR(address, fetcher)
-  const [title, setTitle] = useState('');
-  const [content, setContent] = useState('');
-  const router = useRouter()
+  const [ title, setTitle ] = useState('');
+  const [ content, setContent ] = useState('');
+
   const sendRegister = async () => {
     axios.post(`http://localhost:8080/register?title=${title}&content=${content}`)
     .then(()=> {
-      setTitle("")
-      setContent("")
+      setTitle("");
+      setContent("");
       // SWRがrefetchを行う
-      mutate("http://localhost:8080/")
+      mutate("http://localhost:8080/");
     })
     // Go側でエラーがあった場合
     .catch(()=> {
-      router.push("/_error")
+      router.push("/_error");
     });
   };
 
   let datas;
   if(data){
-    datas = data.map((value: any,key: any)=>{
+    datas = data.map((value: any, key: any)=>{
       let detal_address = `/detal/?id=${value.ID}`;
       return <ul>
         <h1>{value.ID}番</h1>
