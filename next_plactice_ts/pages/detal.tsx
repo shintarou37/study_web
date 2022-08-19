@@ -5,47 +5,49 @@ import { useState } from 'react'
 import axios from 'axios'
 import Head from 'next/head'
 import styles from '../styles/Home.module.css'
+import { apiURL } from '../unify/const'
 
 export default function Detail() {
-  const { mutate } = useSWRConfig()
-  const router = useRouter()
+  const { mutate } = useSWRConfig();
+  const router = useRouter();
+
   // クエリパラメーターを取得する
   let { id } = router.query;
   // クエリパラメーターを取得できなかった場合は"false"という文字列を格納する
   if(!id){
-    id = "false"
+    id = "false";
   }
   // fetcher関数の第一引数にはuseSWRの第一引数が入る
   const fetcher = async (address: string) => {
-    const res = await fetch(address)
+    const res = await fetch(address);
     // もしステータスコードが 200-299 の範囲内では無い場合はエラーページに遷移する
     if (!res.ok) {
-      router.push("/_error")
+      router.push("/_error");
     }
   
-    return res.json()
+    return res.json();
   }
-  const { data, error } = useSWR(`http://localhost:8080/detail?id=${id}`, fetcher)
+  const { data, error } = useSWR(`${apiURL}/detail?id=${id}`, fetcher);
 
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const sendUpdate = async () => {
-    axios.post(`http://localhost:8080/edit?id=${id}&title=${title}&content=${content}`)
+    axios.post(`${apiURL}/edit?id=${id}&title=${title}&content=${content}`)
     .then(()=> {
-      setTitle("")
-      setContent("")
+      setTitle("");
+      setContent("");
       // SWRがrefetchを行う
-      mutate(`http://localhost:8080/detail?id=${id}`)
+      mutate(`${apiURL}/detail?id=${id}`);
     })
     // Go側でエラーがあった場合
     .catch(()=> {
-      router.push("/_error")
+      router.push("/_error");
     });
   };
   const sendDelete = async () => {
-    axios.delete(`http://localhost:8080/delete?id=${id}`)
+    axios.delete(`${apiURL}/delete?id=${id}`)
     .then(()=> {
-      router.push("/")
+      router.push("/");
     })
     // Go側でエラーがあった場合
     .catch(()=> {

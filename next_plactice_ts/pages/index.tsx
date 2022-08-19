@@ -6,31 +6,40 @@ import { useState } from 'react'
 import axios from 'axios'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
+import { apiURL } from '../unify/const'
 
-const Home: NextPage = () => {
-  const address: string = 'http://localhost:8080/';
-  const router = useRouter();
+interface Obj {
+  "ID": number,
+  "CreatedAt": string,
+  "UpdatedAt": string,
+  "DeletedAt": string,
+  "title": string,
+  "content": string
+}
+
+const Home: NextPage = ()=> {
   const fetcher = async (address: string) => {
     const res = await fetch(address);
+    
     // もしステータスコードが 200-299 の範囲内では無い場合はエラーページに遷移する
     if (!res.ok) {
       router.push("/_error");
     }
     return res.json();
   }
-
+  const router = useRouter();
   const { mutate } = useSWRConfig();
-  const { data, error } = useSWR(address, fetcher)
+  const { data, error } = useSWR(apiURL, fetcher)
   const [ title, setTitle ] = useState('');
   const [ content, setContent ] = useState('');
 
-  const sendRegister = async () => {
-    axios.post(`http://localhost:8080/register?title=${title}&content=${content}`)
+  const sendRegister = async ()=> {
+    axios.post(`${apiURL}/register?title=${title}&content=${content}`)
     .then(()=> {
       setTitle("");
       setContent("");
       // SWRがrefetchを行う
-      mutate("http://localhost:8080/");
+      mutate(apiURL);
     })
     // Go側でエラーがあった場合
     .catch(()=> {
@@ -40,9 +49,10 @@ const Home: NextPage = () => {
 
   let datas;
   if(data){
-    datas = data.map((value: any, key: any)=>{
+    datas = data.map((value: Obj, key: number)=> {
       let detal_address = `/detal/?id=${value.ID}`;
-      return <ul>
+      // keyはユニークIDとして付与している
+      return <ul key={key}>
         <h1>{value.ID}番</h1>
         <p>タイトル</p>
         <li>{value.title}</li>
