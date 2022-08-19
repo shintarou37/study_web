@@ -31,6 +31,8 @@ export default function Detail() {
 
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
+
+  // 編集機能
   const sendUpdate = async () => {
     axios.post(`${apiURL}/edit?id=${id}&title=${title}&content=${content}`)
     .then(()=> {
@@ -44,6 +46,8 @@ export default function Detail() {
       router.push("/_error");
     });
   };
+
+  // 削除機能
   const sendDelete = async () => {
     axios.delete(`${apiURL}/delete?id=${id}`)
     .then(()=> {
@@ -54,6 +58,7 @@ export default function Detail() {
       router.push("/_error")
     });
   };
+  
   // dataがない場合に戻り値を渡すと一瞬レイアウトが崩れる
   if(data){
     return (

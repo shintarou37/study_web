@@ -6,16 +6,7 @@ import { useState } from 'react'
 import axios from 'axios'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import { apiURL } from '../unify/const'
-
-interface Obj {
-  "ID": number,
-  "CreatedAt": string,
-  "UpdatedAt": string,
-  "DeletedAt": string,
-  "title": string,
-  "content": string
-}
+import { apiURL, Obj } from '../unify/const'
 
 const Home: NextPage = ()=> {
   const fetcher = async (address: string) => {
@@ -27,12 +18,14 @@ const Home: NextPage = ()=> {
     }
     return res.json();
   }
+
   const router = useRouter();
   const { mutate } = useSWRConfig();
   const { data, error } = useSWR(apiURL, fetcher)
   const [ title, setTitle ] = useState('');
   const [ content, setContent ] = useState('');
 
+  // 登録機能
   const sendRegister = async ()=> {
     axios.post(`${apiURL}/register?title=${title}&content=${content}`)
     .then(()=> {
