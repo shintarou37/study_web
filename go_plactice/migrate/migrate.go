@@ -31,7 +31,8 @@ func main() {
 
 func up01(dsn string, db *gorm.DB) {
     fmt.Println("Start up01!");
-    db.AutoMigrate(Data1{})
+    // charsetをutf8mb4にしないと、ORMをDBに接続した際のcharsetと合わずに文字列を登録すると「?」になる
+    db.Set("gorm:table_options", "charset=utf8mb4").AutoMigrate(Data1{})
     fmt.Println("End up01!");
 
 }
