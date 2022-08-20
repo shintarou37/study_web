@@ -7,6 +7,7 @@ import (
     "gorm.io/gorm"
     "gorm.io/driver/mysql"
     // "reflect"
+    "go_plactice/unify"
 )
 const (
 	StatusInternalServerError = 500
@@ -25,19 +26,21 @@ var db_err error
 
 func main() {
     fmt.Println("Start!");
+
+    // DBに接続する
     dsn := "root:@tcp(127.0.0.1:3306)/go_plactice?charset=utf8mb4&parseTime=True&loc=Local"
     db, db_err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
     if db_err != nil {
 		panic(db_err)
 	}
 
+    // ハンドラー
     http.HandleFunc("/", top);
     http.HandleFunc("/detail", detail);
     http.HandleFunc("/edit", edit);
     http.HandleFunc("/register", register);
     http.HandleFunc("/delete", delete);
     http.ListenAndServe(":8080", nil)
-    fmt.Println("End!");
 }
 /* 
     Top画面 
@@ -51,7 +54,7 @@ func top(w http.ResponseWriter, r *http.Request){
     w.Header().Set("Content-Type", "application/json")
 
     // 全レコードを取得する
-    ret, orm_err := ReadMulti()
+    ret, orm_err := unify.ReadMulti(db)
 
     // jsonエンコード
     outputJson, err := json.Marshal(ret)
@@ -86,7 +89,7 @@ func detail(w http.ResponseWriter, r *http.Request){
         // これ以降の処理は行われない
 	}
     
-    ret, orm_err := Read(id)
+    ret, orm_err := unify.Read(id, db)
 
     // jsonエンコード
     outputJson, err := json.Marshal(ret)
@@ -175,29 +178,4 @@ func delete(w http.ResponseWriter, r *http.Request){
 
     // 任意のデータを返却する（データは使用しないので値は任意）
     fmt.Fprint(w, string(id))
-}
-/* 
-    パス：top
-*/
-func ReadMulti()([]Data1, bool){
-    var data1_arr []Data1
-    // return data1_arr, false
-    if err := db.Debug().Find(&data1_arr).Error; err != nil {
-		return data1_arr, false
-	}
-    return data1_arr, true
-}
-
-/* 
-    パス：detail
-*/
-func Read(id string) (Data1, bool){
-    var data1 Data1
-    // return data1, false
-    // ポインタを引数にしない場合はエラーになる
-    if err := db.Debug().First(&data1, id).Error; err != nil {
-        fmt.Println("error happen!")
-		return data1, true
-	}
-    return data1, true
 }
