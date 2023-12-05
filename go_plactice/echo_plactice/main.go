@@ -18,6 +18,11 @@ func main() {
 	e.GET("/", hello)
 	e.GET("/users/:id", getUser)
 
+	// use prefix
+	ad := e.Group("/admin")
+	ad.GET("/", hello)
+	ad.GET("/users/:id", getUser)
+
 	// Start server
 	e.Logger.Fatal(e.Start(":1323"))
 }
