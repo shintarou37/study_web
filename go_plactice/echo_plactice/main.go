@@ -1,8 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/labstack/gommon/log"
 	"net/http"
 )
 
@@ -25,6 +27,12 @@ func main() {
 
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
+	if l, ok := e.Logger.(*log.Logger); ok {
+		l.SetHeader("${time_rfc3339} ${level}")
+	}
+
+	e.Logger.SetLevel(log.DEBUG)
+	e.Logger.Debug("debug")
 
 	g := e.Group("/middleware")
 	// Executed for requests in the middleware group
