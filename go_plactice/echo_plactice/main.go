@@ -23,19 +23,29 @@ func main() {
 	ad.GET("/", hello)
 	ad.GET("/users/:id", getUser)
 
-	type User struct {
-		Name  string `json:"name" xml:"name" form:"name" query:"name"`
-		Email string `json:"email" xml:"email" form:"email" query:"email"`
-	}
-	
-	e.POST("/User", func(c echo.Context) error {
-		u := new(User)
-		// Bind method binds data from the request body
-		if err := c.Bind(u); err != nil {
-			return err
+	e.Use(middleware.Logger())
+	e.Use(middleware.Recover())
+
+	g := e.Group("/middleware")
+	// Executed for requests in the middleware group
+	g.Use(middleware.BasicAuth(func(username, password string, c echo.Context) (bool, error) {
+		if username == "joe" && password == "secret" {
+			return true, nil
 		}
-		return c.JSON(http.StatusCreated, u)
-	})
+		return false, nil
+	}))
+
+	track := func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			println("request to /users")
+			return next(c)
+		}
+	}
+	// The third argument is executed first
+	e.GET("/users", func(c echo.Context) error {
+		// Executed after the next method of the track function
+		return c.String(http.StatusOK, "/users")
+	}, track)
 
 	// Start server
 	e.Logger.Fatal(e.Start(":1323"))
@@ -47,5 +57,5 @@ func hello(c echo.Context) error {
 }
 
 func getUser(c echo.Context) error {
-	return c.String(http.StatusOK, "team:" + c.Param("id") + ", member:" + c.QueryParam("member"))
+	return c.String(http.StatusOK, "team:"+c.Param("id")+", member:"+c.QueryParam("member"))
 }
