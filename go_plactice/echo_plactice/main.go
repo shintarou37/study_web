@@ -23,6 +23,20 @@ func main() {
 	ad.GET("/", hello)
 	ad.GET("/users/:id", getUser)
 
+	type User struct {
+		Name  string `json:"name" xml:"name" form:"name" query:"name"`
+		Email string `json:"email" xml:"email" form:"email" query:"email"`
+	}
+	
+	e.POST("/User", func(c echo.Context) error {
+		u := new(User)
+		// Bind method binds data from the request body
+		if err := c.Bind(u); err != nil {
+			return err
+		}
+		return c.JSON(http.StatusCreated, u)
+	})
+
 	// Start server
 	e.Logger.Fatal(e.Start(":1323"))
 }
