@@ -15,18 +15,6 @@ func main() {
 	// Middleware
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
-
-	// Routes
-	e.GET("/", hello)
-	e.GET("/users/:id", getUser)
-
-	// use prefix
-	ad := e.Group("/admin")
-	ad.GET("/", hello)
-	ad.GET("/users/:id", getUser)
-
-	e.Use(middleware.Logger())
-	e.Use(middleware.Recover())
 	if l, ok := e.Logger.(*log.Logger); ok {
 		l.SetHeader("${time_rfc3339} ${level}")
 	}
@@ -42,6 +30,15 @@ func main() {
 		}
 		return false, nil
 	}))
+
+	// Routes
+	e.GET("/", hello)
+	e.GET("/users/:id", getUser)
+
+	// use prefix
+	ad := e.Group("/admin")
+	ad.GET("/", hello)
+	ad.GET("/users/:id", getUser)
 
 	track := func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
