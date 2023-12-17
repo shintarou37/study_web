@@ -17,6 +17,7 @@ function App() {
         <input onChange={ (e)=> setInputNum(e.target.value)}></input>
         <button onClick={ ()=> dispatch(increment()) }>➕</button>
         <button onClick={ ()=> dispatch(decrement()) }>-</button>
+        {/* incrementByInputaction.payloadにinputNumの値が入る */}
         <button onClick={ ()=> dispatch(incrementByInput(Number(inputNum)))}>追加</button>
       </div>
     </>
