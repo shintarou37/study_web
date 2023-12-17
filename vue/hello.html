@@ -1,0 +1,42 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My first Vue app</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.7.11/dist/vue.js"></script>
+    <style>
+    .hello {
+        font-size:20pt;
+        font-weight:bold;
+        border:1px solid magenta;
+        padding:5px 10px 0px 10px;
+        margin:10px;
+    }
+    </style>
+</head>
+
+
+<body>
+  <h1>Vue.js</h1>
+  <div id="app">
+      <div><hello v-bind:name="name" /></div>
+      <div><input type="text" v-model="name"></div>
+  </div>
+
+
+  <script>
+  var hello = Vue.component('hello', 
+  {
+      props:['name'],
+      template: '<p class="hello">Hello, {{name}}!</p>',
+  })
+
+  var app = new Vue({
+      el: '#app',
+      data:{
+          name:'no-name'
+      }
+  });
+  </script>
+</body>
+</html>
