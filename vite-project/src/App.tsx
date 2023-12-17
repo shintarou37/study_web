@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from 'react-redux'
 import './App.css'
-import { increment } from './redux/counterSlice';
+import { decrement, increment } from './redux/counterSlice';
 
 function App() {
   // useSelectorは状態にアクセスできる
@@ -13,6 +13,7 @@ function App() {
       <div className='APP'>
         <p>counter: {count}</p>
         <button onClick={ ()=> dispatch(increment()) }>➕</button>
+        <button onClick={ ()=> dispatch(decrement()) }>-</button>
       </div>
     </>
   )
