@@ -15,10 +15,13 @@ export const counterSlice = createSlice({
     },
     decrement: (state)=> {
       state.value--;
+    },
+    incrementByInput: (state, action)=> {
+      state.value += action.payload
     }
   }
 })
 
 // viewで使用するためexportする必要がある
-export const {increment, decrement} = counterSlice.actions;
+export const {increment, decrement, incrementByInput} = counterSlice.actions;
 export default counterSlice.reducer;
